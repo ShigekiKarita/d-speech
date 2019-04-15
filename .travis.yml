@@ -9,6 +9,12 @@ d:
   - ldc
   - dmd
 
+env:
+
+matrix:
+  allow_failures:
+    - d: ldc
+
 addons:
   apt:
     packages:
