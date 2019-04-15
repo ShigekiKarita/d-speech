@@ -28,6 +28,8 @@ jobs:
             dub test -b=unittest-cov
             bash <(curl -s https://codecov.io/bash)
             make doc
+      - persist_to_workspace:
+          root: generated-docs
   test-ldc:
     docker:
       - image: circleci/buildpack-deps:18.04
