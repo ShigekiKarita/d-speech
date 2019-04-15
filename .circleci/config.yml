@@ -8,12 +8,11 @@ jobs:
       - checkout
 
       - run:
-          name: install ldc
-          command: source "$(curl -fsS  --retry 3 https://dlang.org/install.sh | bash -s ldc --activate)"
-
-      - run:
           name: test
-          command: dub test -b=unittest-cov
+          command: |
+            source "$(curl -fsS  --retry 3 https://dlang.org/install.sh | bash -s ldc --activate)"
+            $DC --version
+            dub test -b=unittest-cov
 
       - run:
           name: report coverage
