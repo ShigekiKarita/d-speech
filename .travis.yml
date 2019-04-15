@@ -1,0 +1,35 @@
+sudo: false
+
+os:
+  - linux
+
+language: d
+
+d:
+  - ldc
+  - dmd
+
+addons:
+  apt:
+    packages:
+      - libopenblas-dev
+
+script:
+  - dub test --build=unittest-cov
+  - |
+    if [ $DC = dmd ] then
+      dub run -b=docs
+      touch docs/.nojekyll
+    fi
+
+after_success:
+ - bash <(curl -s https://codecov.io/bash)
+
+deploy:
+  d: dmd
+  provider: pages
+  skip_cleanup: true
+  local_dir: generated-docs
+  on:
+    branch: master
+    condition: $DC = dmd
