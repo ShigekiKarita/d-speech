@@ -19,7 +19,7 @@ script:
   - |
     if [ $DC = dmd ] then
       dub run -b=docs
-      touch docs/.nojekyll
+      touch generated-docs/.nojekyll
     fi
 
 after_success:
