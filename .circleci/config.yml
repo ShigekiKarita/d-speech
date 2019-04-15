@@ -6,6 +6,10 @@ jobs:
 
     steps:
       - checkout
+      - run:
+          name: apt
+          command: apt-get install -y libopenblas-dev libcairo2-dev
+
 
       - run:
           name: test
