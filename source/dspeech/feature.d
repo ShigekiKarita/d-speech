@@ -34,18 +34,21 @@ auto spectrogram(alias windowFun=hann, S)(S xs, size_t nperseg = 256, size_t nov
 
 /// example spectrogram of freq-modulated sin(a t + b cos(c t))
 /// its plot should be simple sinwave in freq domain
+/// $(IMG dspeech.feature.spectrogram.png )
 unittest
 {
     import mir.ndslice : as, map, iota;
     import mir.math : sin, cos;
     import std.math : PI;
-    import dspeech.plot : plotMatrix;
+    import dspeech.plot : plotMatrix, docDir;
+
     auto time = iota(50000).as!double / 10e3;
     auto mod = 1e3 * map!cos(2.0 * PI * 0.5 * time);
     auto xs = map!sin(2.0 * PI * 3e3 * time  + mod);
     auto sp = spectrogram(xs);
     auto fig = plotMatrix(sp);
-    fig.save("freq.png");
+    fig.save(docDir ~ "dspeech.feature.spectrogram.png",
+             cast(int) sp.length!1 * 2, cast(int) sp.length!0 * 2);
 }
 
 @nogc @safe nothrow pure melScale(double freq)
@@ -53,6 +56,8 @@ unittest
     import mir.math.common : log;
     return 1127.0 * log(1.0 + freq / 700.0);
 }
+
+
 
 /**
 Computes Mel-scale filterbank matrix
@@ -63,16 +68,14 @@ Params:
     sampleFreq: sampling frequency of FFT signal
     lowFreq: lowest frequency threshold of the filterbank
     highFreq: highest (relative from Nyquist freq) frequency threshold of the filterbank
+
+TODO:
+    make this function @nogc
  */
-auto melMatrix(Dtype = float)(size_t nFreq, size_t nMel, Dtype sampleFreq, Dtype lowFreq= 20, Dtype highFreq = 0)
-in
-{
-    // import mir.math.common : log2;
-    // assert(log2(nFreq) % 1 == 0);
-}
+@safe nothrow pure melMatrix(Dtype = double)(size_t nFreq, size_t nMel, Dtype sampleFreq, Dtype lowFreq= 20, Dtype highFreq = 0)
 do
 {
-    import mir.ndslice : iota, as, sliced;
+    import mir.ndslice : iota, as, sliced, map;
     import numir : zeros;
     const nyquist = 0.5 * sampleFreq;
     highFreq += nyquist;
@@ -82,48 +85,34 @@ do
     const deltaFreq = nyquist / nFreq;
     const binsMel = iota(nMel + 2).as!Dtype * deltaMel + lowMel;
 
-    auto ret = zeros!Dtype(nFreq, nMel);
-    foreach (iMel; 0 .. nMel)
-    {
-        const leftMel = binsMel[iMel];
-        const centerMel = binsMel[iMel + 1];
-        const rightMel = binsMel[iMel + 2];
-        size_t startFreq = 0;
-        Dtype[] binsFreq;
-        foreach (iFreq; 0 .. nFreq)
-        {
+    return iota(nFreq, nMel).map!(
+        (i) {
+            const iFreq = i / nMel;
+            const iMel = i % nMel;
+            const leftMel = binsMel[iMel];
+            const centerMel = binsMel[iMel + 1];
+            const rightMel = binsMel[iMel + 2];
             const mel = melScale(deltaFreq * iFreq);
-            if (mel >= rightMel) break;
+            if (mel >= rightMel)
+            {
+                assert(iFreq > 0, "too large nMel you set");
+                return cast(Dtype) 0;
+            }
             if (mel > leftMel)
             {
-                if (startFreq == 0)
-                {
-                    startFreq = iFreq;
-                }
-                Dtype weight;
-                if (mel <= centerMel)
-                {
-                    weight = (mel - leftMel) / (centerMel - leftMel);
-                }
-                else
-                {
-                    weight = (rightMel - mel) / (rightMel - centerMel);
-                }
-                binsFreq ~= weight;
+                return (mel <= centerMel ? mel - leftMel : rightMel - mel) / deltaMel;
             }
-        }
-        assert(binsFreq.length > 0, "too large nMel you set");
-        ret[startFreq .. startFreq + binsFreq.length, iMel] = binsFreq.sliced;
-    }
-    return ret;
+            return cast(Dtype) 0;
+        });
 }
 
-///
+/// $(IMG dspeech.feature.mel.png )
 unittest
 {
-    import mir.ndslice;
-    import dspeech.plot : plotMatrix;
-    auto m = melMatrix!double(256, 40, 16000.0);
+    import mir.ndslice : transposed;
+    import dspeech.plot : plotMatrix, docDir;
+    auto m = melMatrix!double(200, 40, 16000.0);
     m.transposed.plotMatrix.save(
-        "mel.png", cast(int) m.length!0 * 3, cast(int) m.length!1 * 9);
+        docDir ~ "dspeech.feature.mel.png",
+        cast(int) m.length!0 * 3, cast(int) m.length!1 * 9);
 }

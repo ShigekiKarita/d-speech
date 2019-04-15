@@ -11,6 +11,7 @@ import ggplotd.geom : geomPoint, geomRectangle;
 import ggplotd.colour : colourGradient;
 import ggplotd.colourspace : XYZ;
 
+static immutable docDir = "generated-docs/";
 
 auto geomPointRect(AES)(AES aesRange)
 {

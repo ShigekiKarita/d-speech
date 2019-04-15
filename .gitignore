@@ -8,6 +8,7 @@
 !dub.json
 !.gitignore
 !Makefile
+!generated-docs/.gitkeep
 !.travis.yml
 
 adrdox
