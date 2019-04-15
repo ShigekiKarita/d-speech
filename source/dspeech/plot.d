@@ -35,8 +35,8 @@ auto plotMatrix(T)(T array2d)
             "height")(xy[0], xy[1], array2d[$-1-xy[1]][xy[0]], 1.0, xstep, ystep))
         .array.geomPointRect.putIn(GGPlotD());
     gg = colourGradient!XYZ("mediumblue-limegreen-orangered").putIn(gg);
-    gg = "time".xaxisLabel.putIn(gg);
-    gg = "freq".yaxisLabel.putIn(gg);
+    // gg = "time".xaxisLabel.putIn(gg);
+    // gg = "freq".yaxisLabel.putIn(gg);
     return gg;
 }
 
