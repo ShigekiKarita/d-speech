@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+        <title>dspeech.feature source code</title>
+	<meta charset="utf-8" />
+	<meta content="width=device-width, initial-scale=1" name="viewport" />
+        <link rel="stylesheet" href="../style.css" />
+        <script type="text/javascript" src="../script.js"></script>
+
+	
+	<link rel="prefetch" href="../search-results.html" />
+</head>
+<body>
+	<div id="page-header">
+		<div id="logotype">
+		<span>Documentation</span>
+		<nav>
+			<a href="http://dlang.org/">Dlang.org</a>
+		</nav>
+		</div>
+
+		<form action="search-docs.html" id="search">
+			<input type="search" placeholder="Find a symbol name..." name="searchTerm" />
+			<input type="submit" value="Go" />
+		</form>
+	</div>
+	<div id="page-body">
+		<div id="page-content">
+		<pre class="d_code highlighted with-line-wrappers"><a id="L1" href="#L1" class="br">1 </a><span class="com">/**
+<a id="L2" href="#L2" class="br">2 </a>   Speech feature extraction module
+<a id="L3" href="#L3" class="br">3 </a>
+<a id="L4" href="#L4" class="br">4 </a>   See also: &quot;Chapter 5 Speech Input/Output,&quot; HTK book 3.5 alpha1, pp. 89 - 113.
+<a id="L5" href="#L5" class="br">5 </a>*/</span>
+<a id="L6" href="#L6" class="br">6 </a><span class="kwrd">module</span> <span class="hid">dspeech.feature</span>;
+<a id="L7" href="#L7" class="br">7 </a>
+<a id="L8" href="#L8" class="br">8 </a>
+<a id="L9" href="#L9" class="br">9 </a><span class="kwrd">import</span> <span class="hid">numir.signal</span> : <span class="hid">hann</span>;
+<a id="L10" href="#L10" class="br">10 </a>
+<a id="L11" href="#L11" class="br">11 </a><span class="com">/**
+<a id="L12" href="#L12" class="br">12 </a>   Computes a magnitude 2-D spectrogram from a time-domain 1-D signal
+<a id="L13" href="#L13" class="br">13 </a>
+<a id="L14" href="#L14" class="br">14 </a>Params:
+<a id="L15" href="#L15" class="br">15 </a>    windowFun = window function
+<a id="L16" href="#L16" class="br">16 </a>    xs = 1-D slice signal
+<a id="L17" href="#L17" class="br">17 </a>    nperseg = (default 256) short-time frame width for each FFT segment
+<a id="L18" href="#L18" class="br">18 </a>    noverlap = (default nperseg / 2) short-time frame overlapped length for each FFT segment
+<a id="L19" href="#L19" class="br">19 </a>
+<a id="L20" href="#L20" class="br">20 </a>Returns: a magnitude 2D spectrogram
+<a id="L21" href="#L21" class="br">21 </a>*/</span>
+<a id="L22" href="#L22" class="br">22 </a><span class="kwrd">auto</span> <a href="dspeech.feature.d.html#L22" title="dspeech.feature.spectrogram" class="hid">spectrogram</a>(<span class="kwrd">alias</span> <span class="hid">windowFun</span>=<span class="hid">hann</span>, <span class="hid">S</span>)(<span class="hid">S</span> <span class="hid">xs</span>, <span class="hid">size_t</span> <span class="hid">nperseg</span> = <span class="num">256</span>, <span class="hid">size_t</span> <span class="hid">noverlap</span> = <span class="num">128</span>)
+<a id="L23" href="#L23" class="br">23 </a>{
+<a id="L24" href="#L24" class="br">24 </a>    <span class="kwrd">import</span> <span class="hid">numir.signal</span> : <span class="hid">stft</span>;
+<a id="L25" href="#L25" class="br">25 </a>    <span class="kwrd">import</span> <span class="hid">mir.math.common</span> : <span class="hid">sqrt</span>;
+<a id="L26" href="#L26" class="br">26 </a>    <span class="kwrd">import</span> <span class="hid">mir.ndslice.topology</span> : <span class="hid">map</span>;
+<a id="L27" href="#L27" class="br">27 </a>    <span class="kwrd">import</span> <span class="hid">mir.ndslice</span> : <span class="hid">transposed</span>;
+<a id="L28" href="#L28" class="br">28 </a>
+<a id="L29" href="#L29" class="br">29 </a>    <span class="kwrd">auto</span> <span class="hid">stfs</span> = <span class="hid">stft</span>!<span class="hid">windowFun</span>(<span class="hid">xs</span>, <span class="hid">nperseg</span>, <span class="hid">noverlap</span>);
+<a id="L30" href="#L30" class="br">30 </a>    <span class="kwrd">auto</span> <span class="hid">upper</span> = <span class="hid">stfs.transposed</span>[<span class="hid">nperseg</span> / <span class="num">2</span> .. $];
+<a id="L31" href="#L31" class="br">31 </a>    <span class="kwrd">auto</span> <span class="hid">mag</span> = <span class="hid">upper.map</span>!(<span class="hid">a</span> =&gt; <span class="hid">sqrt</span>(<span class="hid">a.re</span> * <span class="hid">a.re</span> + <span class="hid">a.im</span> * <span class="hid">a.im</span>));
+<a id="L32" href="#L32" class="br">32 </a>    <span class="kwrd">return</span> <span class="hid">mag</span>;
+<a id="L33" href="#L33" class="br">33 </a>}
+<a id="L34" href="#L34" class="br">34 </a>
+<a id="L35" href="#L35" class="br">35 </a><span class="com">/// example spectrogram of freq-modulated sin(a t + b cos(c t))</span>
+<a id="L36" href="#L36" class="br">36 </a><span class="com">/// its plot should be simple sinwave in freq domain</span>
+<a id="L37" href="#L37" class="br">37 </a><span class="com">/// $(IMG dspeech.feature.spectrogram.png )</span>
+<a id="L38" href="#L38" class="br">38 </a><span class="kwrd">unittest</span>
+<a id="L39" href="#L39" class="br">39 </a>{
+<a id="L40" href="#L40" class="br">40 </a>    <span class="kwrd">import</span> <span class="hid">mir.ndslice</span> : <span class="hid">as</span>, <span class="hid">map</span>, <span class="hid">iota</span>;
+<a id="L41" href="#L41" class="br">41 </a>    <span class="kwrd">import</span> <span class="hid">mir.math</span> : <span class="hid">sin</span>, <span class="hid">cos</span>;
+<a id="L42" href="#L42" class="br">42 </a>    <span class="kwrd">import</span> <span class="hid">std.math</span> : <span class="hid">PI</span>;
+<a id="L43" href="#L43" class="br">43 </a>    <span class="kwrd">import</span> <span class="hid">dspeech.plot</span> : <span class="hid">plotMatrix</span>, <span class="hid">docDir</span>;
+<a id="L44" href="#L44" class="br">44 </a>
+<a id="L45" href="#L45" class="br">45 </a>    <span class="kwrd">auto</span> <span class="hid">time</span> = <span class="hid">iota</span>(<span class="num">50000</span>).<span class="hid">as</span>!<span class="type">double</span> / <span class="num">10e3</span>;
+<a id="L46" href="#L46" class="br">46 </a>    <span class="kwrd">auto</span> <span class="hid">mod</span> = <span class="num">1e3</span> * <span class="hid">map</span>!<span class="hid">cos</span>(<span class="num">2.0</span> * <span class="hid">PI</span> * <span class="num">0.5</span> * <span class="hid">time</span>);
+<a id="L47" href="#L47" class="br">47 </a>    <span class="kwrd">auto</span> <span class="hid">xs</span> = <span class="hid">map</span>!<span class="hid">sin</span>(<span class="num">2.0</span> * <span class="hid">PI</span> * <span class="num">3e3</span> * <span class="hid">time</span>  + <span class="hid">mod</span>);
+<a id="L48" href="#L48" class="br">48 </a>    <span class="kwrd">auto</span> <span class="hid">sp</span> = <a href="dspeech.feature.d.html#L22" title="dspeech.feature.spectrogram" class="hid">spectrogram</a>(<span class="hid">xs</span>);
+<a id="L49" href="#L49" class="br">49 </a>    <span class="kwrd">auto</span> <span class="hid">fig</span> = <span class="hid">plotMatrix</span>(<span class="hid">sp</span>);
+<a id="L50" href="#L50" class="br">50 </a>    <span class="hid">fig.save</span>(<span class="hid">docDir</span> ~ <span class="str">&quot;dspeech.feature.spectrogram.png&quot;</span>,
+<a id="L51" href="#L51" class="br">51 </a>             <span class="kwrd">cast</span>(<span class="type">int</span>) <span class="hid">sp.length</span>!<span class="num">1</span> * <span class="num">2</span>, <span class="kwrd">cast</span>(<span class="type">int</span>) <span class="hid">sp.length</span>!<span class="num">0</span> * <span class="num">2</span>);
+<a id="L52" href="#L52" class="br">52 </a>}
+<a id="L53" href="#L53" class="br">53 </a>
+<a id="L54" href="#L54" class="br">54 </a>@<span class="hid">nogc</span> @<span class="hid">safe</span> <span class="kwrd">nothrow</span> <span class="kwrd">pure</span> <a href="dspeech.feature.d.html#L54" title="dspeech.feature.melScale" class="hid">melScale</a>(<span class="type">double</span> <span class="hid">freq</span>)
+<a id="L55" href="#L55" class="br">55 </a>{
+<a id="L56" href="#L56" class="br">56 </a>    <span class="kwrd">import</span> <span class="hid">mir.math.common</span> : <span class="hid">log</span>;
+<a id="L57" href="#L57" class="br">57 </a>    <span class="kwrd">return</span> <span class="num">1127.0</span> * <span class="hid">log</span>(<span class="num">1.0</span> + <span class="hid">freq</span> / <span class="num">700.0</span>);
+<a id="L58" href="#L58" class="br">58 </a>}
+<a id="L59" href="#L59" class="br">59 </a>
+<a id="L60" href="#L60" class="br">60 </a>
+<a id="L61" href="#L61" class="br">61 </a>
+<a id="L62" href="#L62" class="br">62 </a><span class="com">/**
+<a id="L63" href="#L63" class="br">63 </a>Computes Mel-scale filterbank matrix
+<a id="L64" href="#L64" class="br">64 </a>
+<a id="L65" href="#L65" class="br">65 </a>Params:
+<a id="L66" href="#L66" class="br">66 </a>    nFreq: the number of FFT bins
+<a id="L67" href="#L67" class="br">67 </a>    nMel: the number of filterbank bins
+<a id="L68" href="#L68" class="br">68 </a>    sampleFreq: sampling frequency of FFT signal
+<a id="L69" href="#L69" class="br">69 </a>    lowFreq: lowest frequency threshold of the filterbank
+<a id="L70" href="#L70" class="br">70 </a>    highFreq: highest (relative from Nyquist freq) frequency threshold of the filterbank
+<a id="L71" href="#L71" class="br">71 </a>
+<a id="L72" href="#L72" class="br">72 </a>TODO:
+<a id="L73" href="#L73" class="br">73 </a>    make this function @nogc
+<a id="L74" href="#L74" class="br">74 </a> */</span>
+<a id="L75" href="#L75" class="br">75 </a>@<span class="hid">safe</span> <span class="kwrd">nothrow</span> <span class="kwrd">pure</span> <a href="dspeech.feature.d.html#L75" title="dspeech.feature.melMatrix" class="hid">melMatrix</a>(<span class="hid">Dtype</span> = <span class="type">double</span>)(<span class="hid">size_t</span> <span class="hid">nFreq</span>, <span class="hid">size_t</span> <span class="hid">nMel</span>, <span class="hid">Dtype</span> <span class="hid">sampleFreq</span>, <span class="hid">Dtype</span> <span class="hid">lowFreq</span>= <span class="num">20</span>, <span class="hid">Dtype</span> <span class="hid">highFreq</span> = <span class="num">0</span>)
+<a id="L76" href="#L76" class="br">76 </a><span class="kwrd">do</span>
+<a id="L77" href="#L77" class="br">77 </a>{
+<a id="L78" href="#L78" class="br">78 </a>    <span class="kwrd">import</span> <span class="hid">mir.ndslice</span> : <span class="hid">iota</span>, <span class="hid">as</span>, <span class="hid">sliced</span>, <span class="hid">map</span>;
+<a id="L79" href="#L79" class="br">79 </a>    <span class="kwrd">import</span> <span class="hid">numir</span> : <span class="hid">zeros</span>;
+<a id="L80" href="#L80" class="br">80 </a>    <span class="kwrd">const</span> <span class="hid">nyquist</span> = <span class="num">0.5</span> * <span class="hid">sampleFreq</span>;
+<a id="L81" href="#L81" class="br">81 </a>    <span class="hid">highFreq</span> += <span class="hid">nyquist</span>;
+<a id="L82" href="#L82" class="br">82 </a>    <span class="kwrd">const</span> <span class="hid">lowMel</span> = <span class="hid">lowFreq.melScale</span>;
+<a id="L83" href="#L83" class="br">83 </a>    <span class="kwrd">const</span> <span class="hid">highMel</span> = <span class="hid">highFreq.melScale</span>;
+<a id="L84" href="#L84" class="br">84 </a>    <span class="kwrd">const</span> <span class="hid">deltaMel</span> = (<span class="hid">highMel</span> - <span class="hid">lowMel</span>) / <span class="hid">nMel</span>;
+<a id="L85" href="#L85" class="br">85 </a>    <span class="kwrd">const</span> <span class="hid">deltaFreq</span> = <span class="hid">nyquist</span> / <span class="hid">nFreq</span>;
+<a id="L86" href="#L86" class="br">86 </a>    <span class="kwrd">const</span> <span class="hid">binsMel</span> = <span class="hid">iota</span>(<span class="hid">nMel</span> + <span class="num">2</span>).<span class="hid">as</span>!<span class="hid">Dtype</span> * <span class="hid">deltaMel</span> + <span class="hid">lowMel</span>;
+<a id="L87" href="#L87" class="br">87 </a>
+<a id="L88" href="#L88" class="br">88 </a>    <span class="kwrd">return</span> <span class="hid">iota</span>(<span class="hid">nFreq</span>, <span class="hid">nMel</span>).<span class="hid">map</span>!(
+<a id="L89" href="#L89" class="br">89 </a>        (<span class="hid">i</span>) {
+<a id="L90" href="#L90" class="br">90 </a>            <span class="kwrd">const</span> <span class="hid">iFreq</span> = <span class="hid">i</span> / <span class="hid">nMel</span>;
+<a id="L91" href="#L91" class="br">91 </a>            <span class="kwrd">const</span> <span class="hid">iMel</span> = <span class="hid">i</span> % <span class="hid">nMel</span>;
+<a id="L92" href="#L92" class="br">92 </a>            <span class="kwrd">const</span> <span class="hid">leftMel</span> = <span class="hid">binsMel</span>[<span class="hid">iMel</span>];
+<a id="L93" href="#L93" class="br">93 </a>            <span class="kwrd">const</span> <span class="hid">centerMel</span> = <span class="hid">binsMel</span>[<span class="hid">iMel</span> + <span class="num">1</span>];
+<a id="L94" href="#L94" class="br">94 </a>            <span class="kwrd">const</span> <span class="hid">rightMel</span> = <span class="hid">binsMel</span>[<span class="hid">iMel</span> + <span class="num">2</span>];
+<a id="L95" href="#L95" class="br">95 </a>            <span class="kwrd">const</span> <span class="hid">mel</span> = <a href="dspeech.feature.d.html#L54" title="dspeech.feature.melScale" class="hid">melScale</a>(<span class="hid">deltaFreq</span> * <span class="hid">iFreq</span>);
+<a id="L96" href="#L96" class="br">96 </a>            <span class="kwrd">if</span> (<span class="hid">mel</span> &gt;= <span class="hid">rightMel</span>)
+<a id="L97" href="#L97" class="br">97 </a>            {
+<a id="L98" href="#L98" class="br">98 </a>                <span class="kwrd">assert</span>(<span class="hid">iFreq</span> &gt; <span class="num">0</span>, <span class="str">&quot;too large nMel you set&quot;</span>);
+<a id="L99" href="#L99" class="br">99 </a>                <span class="kwrd">return</span> <span class="kwrd">cast</span>(<span class="hid">Dtype</span>) <span class="num">0</span>;
+<a id="L100" href="#L100" class="br">100 </a>            }
+<a id="L101" href="#L101" class="br">101 </a>            <span class="kwrd">if</span> (<span class="hid">mel</span> &gt; <span class="hid">leftMel</span>)
+<a id="L102" href="#L102" class="br">102 </a>            {
+<a id="L103" href="#L103" class="br">103 </a>                <span class="kwrd">return</span> (<span class="hid">mel</span> &lt;= <span class="hid">centerMel</span> ? <span class="hid">mel</span> - <span class="hid">leftMel</span> : <span class="hid">rightMel</span> - <span class="hid">mel</span>) / <span class="hid">deltaMel</span>;
+<a id="L104" href="#L104" class="br">104 </a>            }
+<a id="L105" href="#L105" class="br">105 </a>            <span class="kwrd">return</span> <span class="kwrd">cast</span>(<span class="hid">Dtype</span>) <span class="num">0</span>;
+<a id="L106" href="#L106" class="br">106 </a>        });
+<a id="L107" href="#L107" class="br">107 </a>}
+<a id="L108" href="#L108" class="br">108 </a>
+<a id="L109" href="#L109" class="br">109 </a><span class="com">/// $(IMG dspeech.feature.mel.png )</span>
+<a id="L110" href="#L110" class="br">110 </a><span class="kwrd">unittest</span>
+<a id="L111" href="#L111" class="br">111 </a>{
+<a id="L112" href="#L112" class="br">112 </a>    <span class="kwrd">import</span> <span class="hid">mir.ndslice</span> : <span class="hid">transposed</span>;
+<a id="L113" href="#L113" class="br">113 </a>    <span class="kwrd">import</span> <span class="hid">dspeech.plot</span> : <span class="hid">plotMatrix</span>, <span class="hid">docDir</span>;
+<a id="L114" href="#L114" class="br">114 </a>    <span class="kwrd">auto</span> <span class="hid">m</span> = <a href="dspeech.feature.d.html#L75" title="dspeech.feature.melMatrix" class="hid">melMatrix</a>!<span class="type">double</span>(<span class="num">200</span>, <span class="num">40</span>, <span class="num">16000.0</span>);
+<a id="L115" href="#L115" class="br">115 </a>    <span class="hid">m.transposed.plotMatrix.save</span>(
+<a id="L116" href="#L116" class="br">116 </a>        <span class="hid">docDir</span> ~ <span class="str">&quot;dspeech.feature.mel.png&quot;</span>,
+<a id="L117" href="#L117" class="br">117 </a>        <span class="kwrd">cast</span>(<span class="type">int</span>) <span class="hid">m.length</span>!<span class="num">0</span> * <span class="num">3</span>, <span class="kwrd">cast</span>(<span class="type">int</span>) <span class="hid">m.length</span>!<span class="num">1</span> * <span class="num">9</span>);
+<a id="L118" href="#L118" class="br">118 </a>}</pre></div>
+		<div id="page-nav">
+		<div id="source-navigation"><div class="list-holder"><ul><li><a href="../dspeech.feature.html" class="docs">[Docs] </a><a href="#L1">dspeech.feature</a><ul><li><a href="#L9">numir.signal</a></li><li><a href="../dspeech.feature.spectrogram.html" class="docs">[Docs] </a><a href="#L22">spectrogram</a></li><li><a href="#L54">melScale</a></li><li><a href="../dspeech.feature.melMatrix.html" class="docs">[Docs] </a><a href="#L75">melMatrix</a></li></ul></li></ul></div></div></div>
+	</div>
+	<div id="page-footer">Page generated by <a href="https://github.com/adamdruppe/adrdox">adrdox</a></div>
+</body>
+</html>

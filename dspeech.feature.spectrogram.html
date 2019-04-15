@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+        <title>spectrogram (dspeech.feature.spectrogram)</title>
+	<meta charset="utf-8" />
+	<meta content="width=device-width, initial-scale=1" name="viewport" />
+        <link rel="stylesheet" href="style.css" />
+        <script type="text/javascript" src="script.js"></script>
+
+	
+	<link rel="prefetch" href="search-results.html" />
+</head>
+<body>
+	<div id="page-header">
+		<div id="logotype">
+		<span>Documentation</span>
+		<nav>
+			<a href="http://dlang.org/">Dlang.org</a>
+		</nav>
+		</div>
+
+		<form action="search-docs.html" id="search">
+			<input type="search" placeholder="Find a symbol name..." name="searchTerm" />
+			<input type="submit" value="Go" />
+		</form>
+	</div>
+	<div id="page-body">
+		<div id="page-content">
+		<h1>spectrogram</h1><div class="breadcrumbs"><a href="dspeech.html" class="breadcrumb">dspeech</a><a href="dspeech.feature.html" class="breadcrumb">feature</a></div><div><div class="documentation-comment synopsis"><div><p>Computes a magnitude 2-D spectrogram from a time-domain 1-D signal</p></div></div></div><div class="annotated-prototype"><div class="function-prototype"><div class="attributes"></div><div class="return-type"><a href="http://dpldocs.info/auto-function-return-prototype" class="lang-feature">auto</a> </div><div class="function-name">spectrogram</div><div class="template-parameters">(<div class="parameters-list toplevel"><div class="template-parameter-item parameter-item">	<span><a href="http://dpldocs.info/template-alias-parameter" class="lang-feature">alias</a> <span data-ident="windowFun" class="name">windowFun</span> = <span data-ident="hann" class="name">hann</span></span></div><div class="template-parameter-item parameter-item">	<span><span data-ident="S" class="name">S</span></span></div></div>)</div><div class="runtime-parameters">(<div class="parameters-list toplevel"><div class="runtime-parameter-item parameter-item"><span class="parameter-type-holder"><span class="parameter-type"><span data-ident="S" class="name">S</span></span></span> <span data-ident="xs" class="parameter-name name"><a href="#param-xs">xs</a></span></div><span class="comma">,</span><div class="runtime-parameter-item parameter-item"><span class="parameter-type-holder"><span class="parameter-type"><span data-ident="size_t" class="name">size_t</span></span></span> <span data-ident="nperseg" class="parameter-name name"><a href="#param-nperseg">nperseg</a></span><span class="parameter-default-value">&#160;=&#160;256</span></div><span class="comma">,</span><div class="runtime-parameter-item parameter-item"><span class="parameter-type-holder"><span class="parameter-type"><span data-ident="size_t" class="name">size_t</span></span></span> <span data-ident="noverlap" class="parameter-name name"><a href="#param-noverlap">noverlap</a></span><span class="parameter-default-value">&#160;=&#160;128</span></div></div>)</div><div class="function-contracts"></div></div></div><div><h2 id="parameters"><a href="#parameters" class="header-anchor">Parameters</a></h2><dl class="parameter-descriptions"><dt id="param-windowFun"><a data-ident="windowFun" href="#param-windowFun" class="parameter-name">windowFun</a></dt><dd><div class="documentation-comment"><div><p>window function</p></div></div></dd><dt id="param-xs"><a data-ident="xs" href="#param-xs" class="parameter-name">xs</a></dt><dd><div class="parameter-type-holder">Type: <span class="parameter-type"><span data-ident="S" class="name">S</span></span></div><div class="documentation-comment"><div><p>1-D slice signal</p></div></div></dd><dt id="param-nperseg"><a data-ident="nperseg" href="#param-nperseg" class="parameter-name">nperseg</a></dt><dd><div class="parameter-type-holder">Type: <span class="parameter-type"><span data-ident="size_t" class="name">size_t</span></span></div><div class="documentation-comment"><div><p>(default 256) short-time frame width for each FFT segment</p></div></div></dd><dt id="param-noverlap"><a data-ident="noverlap" href="#param-noverlap" class="parameter-name">noverlap</a></dt><dd><div class="parameter-type-holder">Type: <span class="parameter-type"><span data-ident="size_t" class="name">size_t</span></span></div><div class="documentation-comment"><div><p>(default nperseg / 2) short-time frame overlapped length for each FFT segment</p></div></div></dd></dl><h2 id="returns"><a href="#returns" class="header-anchor">Return Value</a></h2><div><div class="return-type-holder">Type: <span class="return-type"><a href="http://dpldocs.info/auto-function-return-prototype" class="lang-feature">auto</a> </span></div><div class="documentation-comment returns-description"><div><p>a magnitude 2D spectrogram</p></div></div></div><h2 id="examples"><a href="#examples" class="header-anchor">Examples</a></h2><div class="documentation-comment"><div></div></div><div class="unittest-example-holder"><div class="documentation-comment"><p>example spectrogram of freq-modulated sin(a t + b cos(c t))
+its plot should be simple sinwave in freq domain
+<img alt="" src="dspeech.feature.spectrogram.png" /></p></div><pre class="d_code highlighted with-line-wrappers"><span class="br">1 </span><span class="kwrd">import</span> <span class="hid">mir</span>.<span class="hid">ndslice</span> : <span class="hid">as</span>, <span class="hid">map</span>, <span class="hid">iota</span>;
+<span class="br">2 </span><span class="kwrd">import</span> <span class="hid">mir</span>.<span class="hid">math</span> : <span class="hid">sin</span>, <span class="hid">cos</span>;
+<span class="br">3 </span><span class="kwrd">import</span> <span class="hid">std</span>.<span class="hid">math</span> : <span class="hid">PI</span>;
+<span class="br">4 </span><span class="kwrd">import</span> <span class="hid">dspeech</span>.<span class="hid">plot</span> : <span class="hid">plotMatrix</span>, <span class="hid">docDir</span>;
+<span class="br">5 </span>
+<span class="br">6 </span><span class="kwrd">auto</span> <span class="hid">time</span> = <span class="hid">iota</span>(<span class="num">50000</span>).<span class="hid">as</span>!<span class="type">double</span> / <span class="num">10e3</span>;
+<span class="br">7 </span><span class="kwrd">auto</span> <span class="hid">mod</span> = <span class="num">1e3</span> * <span class="hid">map</span>!<span class="hid">cos</span>(<span class="num">2.0</span> * <span class="hid">PI</span> * <span class="num">0.5</span> * <span class="hid">time</span>);
+<span class="br">8 </span><span class="kwrd">auto</span> <span class="hid">xs</span> = <span class="hid">map</span>!<span class="hid">sin</span>(<span class="num">2.0</span> * <span class="hid">PI</span> * <span class="num">3e3</span> * <span class="hid">time</span>  + <span class="hid">mod</span>);
+<span class="br">9 </span><span class="kwrd">auto</span> <span class="hid">sp</span> = <span class="hid">spectrogram</span>(<span class="hid">xs</span>);
+<span class="br">10 </span><span class="kwrd">auto</span> <span class="hid">fig</span> = <span class="hid">plotMatrix</span>(<span class="hid">sp</span>);
+<span class="br">11 </span><span class="hid">fig</span>.<span class="hid">save</span>(<span class="hid">docDir</span> ~ <span class="str">&quot;dspeech.feature.spectrogram.png&quot;</span>,
+<span class="br">12 </span>         <span class="kwrd">cast</span>(<span class="type">int</span>) <span class="hid">sp</span>.<span class="hid">length</span>!<span class="num">1</span> * <span class="num">2</span>, <span class="kwrd">cast</span>(<span class="type">int</span>) <span class="hid">sp</span>.<span class="hid">length</span>!<span class="num">0</span> * <span class="num">2</span>);</pre></div><h2 id="meta"><a href="#meta" class="header-anchor">Meta</a></h2><div class="documentation-comment source-section other-section"><h3 id="source"><a href="#source" class="header-anchor">Source</a></h3><div><p><a href="source/dspeech.feature.d.html#L22">See Implementation</a><br /></p></div></div></div></div>
+		<div id="page-nav"><a href="dspeech.html" class="parent">dspeech</a><a href="dspeech.feature.html" class="parent">feature</a>
+		<span class="type-separator">functions</span><ul><li><a href="dspeech.feature.melMatrix.html" class="function">melMatrix</a></li><li><a href="dspeech.feature.spectrogram.html" class="function current">spectrogram</a></li></ul></div>
+	</div>
+	<div id="page-footer">Page generated by <a href="https://github.com/adamdruppe/adrdox">adrdox</a></div>
+</body>
+</html>

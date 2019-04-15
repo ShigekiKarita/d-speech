@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+        <title>dspeech.plot source code</title>
+	<meta charset="utf-8" />
+	<meta content="width=device-width, initial-scale=1" name="viewport" />
+        <link rel="stylesheet" href="../style.css" />
+        <script type="text/javascript" src="../script.js"></script>
+
+	
+	<link rel="prefetch" href="../search-results.html" />
+</head>
+<body>
+	<div id="page-header">
+		<div id="logotype">
+		<span>Documentation</span>
+		<nav>
+			<a href="http://dlang.org/">Dlang.org</a>
+		</nav>
+		</div>
+
+		<form action="search-docs.html" id="search">
+			<input type="search" placeholder="Find a symbol name..." name="searchTerm" />
+			<input type="submit" value="Go" />
+		</form>
+	</div>
+	<div id="page-body">
+		<div id="page-content">
+		<pre class="d_code highlighted with-line-wrappers"><a id="L1" href="#L1" class="br">1 </a><span class="com">/// speech plot module on GGplotD</span>
+<a id="L2" href="#L2" class="br">2 </a><span class="kwrd">module</span> <span class="hid">dspeech.plot</span>;
+<a id="L3" href="#L3" class="br">3 </a>
+<a id="L4" href="#L4" class="br">4 </a><span class="kwrd">import</span> <span class="hid">std.array</span> : <span class="hid">array</span>;
+<a id="L5" href="#L5" class="br">5 </a><span class="kwrd">import</span> <span class="hid">std.algorithm</span> : <span class="hid">map</span>;
+<a id="L6" href="#L6" class="br">6 </a>
+<a id="L7" href="#L7" class="br">7 </a><span class="kwrd">import</span> <span class="hid">ggplotd.aes</span> : <span class="hid">aes</span>;
+<a id="L8" href="#L8" class="br">8 </a><span class="kwrd">import</span> <span class="hid">ggplotd.axes</span> : <span class="hid">xaxisLabel</span>, <span class="hid">yaxisLabel</span>;
+<a id="L9" href="#L9" class="br">9 </a><span class="kwrd">import</span> <span class="hid">ggplotd.ggplotd</span> : <span class="hid">GGPlotD</span>, <span class="hid">putIn</span>;
+<a id="L10" href="#L10" class="br">10 </a><span class="kwrd">import</span> <span class="hid">ggplotd.geom</span> : <span class="hid">geomPoint</span>, <span class="hid">geomRectangle</span>;
+<a id="L11" href="#L11" class="br">11 </a><span class="kwrd">import</span> <span class="hid">ggplotd.colour</span> : <span class="hid">colourGradient</span>;
+<a id="L12" href="#L12" class="br">12 </a><span class="kwrd">import</span> <span class="hid">ggplotd.colourspace</span> : <span class="hid">XYZ</span>;
+<a id="L13" href="#L13" class="br">13 </a>
+<a id="L14" href="#L14" class="br">14 </a><span class="kwrd">static</span> <span class="kwrd">immutable</span> <a href="dspeech.plot.d.html#L0" title="dspeech.plot.docDir" class="hid">docDir</a> = <span class="str">&quot;generated-docs/&quot;</span>;
+<a id="L15" href="#L15" class="br">15 </a>
+<a id="L16" href="#L16" class="br">16 </a><span class="kwrd">auto</span> <a href="dspeech.plot.d.html#L16" title="dspeech.plot.geomPointRect" class="hid">geomPointRect</a>(<span class="hid">AES</span>)(<span class="hid">AES</span> <span class="hid">aesRange</span>)
+<a id="L17" href="#L17" class="br">17 </a>{
+<a id="L18" href="#L18" class="br">18 </a>    <span class="kwrd">import</span> <span class="hid">ggplotd.aes</span> : <span class="hid">aes</span>, <span class="hid">Pixel</span>, <span class="hid">DefaultValues</span>, <span class="hid">merge</span>;
+<a id="L19" href="#L19" class="br">19 </a>    <span class="kwrd">import</span> <span class="hid">ggplotd.range</span> : <span class="hid">mergeRange</span>;
+<a id="L20" href="#L20" class="br">20 </a>
+<a id="L21" href="#L21" class="br">21 </a>    <span class="kwrd">return</span> <span class="hid">DefaultValues.mergeRange</span>(<span class="hid">aesRange</span>)
+<a id="L22" href="#L22" class="br">22 </a>        .<span class="hid">map</span>!((<span class="hid">a</span>) =&gt; <span class="hid">a.merge</span>(<span class="hid">aes</span>!(<span class="str">&quot;sizeStore&quot;</span>, <span class="str">&quot;width&quot;</span>, <span class="str">&quot;height&quot;</span>, <span class="str">&quot;fill&quot;</span>)
+<a id="L23" href="#L23" class="br">23 </a>        (<span class="hid">a.size</span>, <span class="hid">a.width</span>, <span class="hid">a.height</span>, <span class="hid">a.alpha</span>))).<span class="hid">geomRectangle</span>;
+<a id="L24" href="#L24" class="br">24 </a>}
+<a id="L25" href="#L25" class="br">25 </a>
+<a id="L26" href="#L26" class="br">26 </a><span class="kwrd">auto</span> <a href="dspeech.plot.d.html#L26" title="dspeech.plot.plotMatrix" class="hid">plotMatrix</a>(<span class="hid">T</span>)(<span class="hid">T</span> <span class="hid">array2d</span>)
+<a id="L27" href="#L27" class="br">27 </a>{
+<a id="L28" href="#L28" class="br">28 </a>    <span class="kwrd">import</span> <span class="hid">std.algorithm</span> : <span class="hid">cartesianProduct</span>;
+<a id="L29" href="#L29" class="br">29 </a>    <span class="kwrd">import</span> <span class="hid">std.range</span> : <span class="hid">iota</span>;
+<a id="L30" href="#L30" class="br">30 </a>    <span class="kwrd">auto</span> <span class="hid">xstep</span> = <span class="num">1</span>;
+<a id="L31" href="#L31" class="br">31 </a>    <span class="kwrd">auto</span> <span class="hid">ystep</span> = <span class="num">1</span>;
+<a id="L32" href="#L32" class="br">32 </a>    <span class="kwrd">auto</span> <span class="hid">xlen</span> = <span class="hid">array2d</span>[<span class="num">0</span>].<span class="hid">length</span>;
+<a id="L33" href="#L33" class="br">33 </a>    <span class="kwrd">auto</span> <span class="hid">ylen</span> = <span class="hid">array2d.length</span>;
+<a id="L34" href="#L34" class="br">34 </a>    <span class="kwrd">auto</span> <span class="hid">xys</span> = <span class="hid">cartesianProduct</span>(<span class="hid">xlen.iota</span>, <span class="hid">ylen.iota</span>);
+<a id="L35" href="#L35" class="br">35 </a>    <span class="kwrd">auto</span> <span class="hid">gg</span> = <span class="hid">xys.map</span>!(<span class="hid">xy</span> =&gt; <span class="hid">aes</span>!(<span class="str">&quot;x&quot;</span>, <span class="str">&quot;y&quot;</span>, <span class="str">&quot;colour&quot;</span>, <span class="str">&quot;size&quot;</span>, <span class="str">&quot;width&quot;</span>,
+<a id="L36" href="#L36" class="br">36 </a>            <span class="str">&quot;height&quot;</span>)(<span class="hid">xy</span>[<span class="num">0</span>], <span class="hid">xy</span>[<span class="num">1</span>], <span class="hid">array2d</span>[$-<span class="num">1</span>-<span class="hid">xy</span>[<span class="num">1</span>]][<span class="hid">xy</span>[<span class="num">0</span>]], <span class="num">1.0</span>, <span class="hid">xstep</span>, <span class="hid">ystep</span>))
+<a id="L37" href="#L37" class="br">37 </a>        .<span class="hid">array.geomPointRect.putIn</span>(<span class="hid">GGPlotD</span>());
+<a id="L38" href="#L38" class="br">38 </a>    <span class="hid">gg</span> = <span class="hid">colourGradient</span>!<span class="hid">XYZ</span>(<span class="str">&quot;mediumblue-limegreen-orangered&quot;</span>).<span class="hid">putIn</span>(<span class="hid">gg</span>);
+<a id="L39" href="#L39" class="br">39 </a>    <span class="com">// gg = &quot;time&quot;.xaxisLabel.putIn(gg);</span>
+<a id="L40" href="#L40" class="br">40 </a>    <span class="com">// gg = &quot;freq&quot;.yaxisLabel.putIn(gg);</span>
+<a id="L41" href="#L41" class="br">41 </a>    <span class="kwrd">return</span> <span class="hid">gg</span>;
+<a id="L42" href="#L42" class="br">42 </a>}
+<a id="L43" href="#L43" class="br">43 </a>
+<a id="L44" href="#L44" class="br">44 </a><span class="kwrd">auto</span> <a href="dspeech.plot.d.html#L44" title="dspeech.plot.plotVector" class="hid">plotVector</a>(<span class="hid">T</span>)(<span class="hid">T</span> <span class="hid">array</span>)
+<a id="L45" href="#L45" class="br">45 </a>{
+<a id="L46" href="#L46" class="br">46 </a>    <span class="kwrd">import</span> <span class="hid">std.range</span> : <span class="hid">enumerate</span>;
+<a id="L47" href="#L47" class="br">47 </a>    <span class="kwrd">import</span> <span class="hid">ggplotd.geom</span> : <span class="hid">geomLine</span>;
+<a id="L48" href="#L48" class="br">48 </a>
+<a id="L49" href="#L49" class="br">49 </a>    <span class="kwrd">auto</span> <span class="hid">gg</span> = <span class="hid">GGPlotD</span>();
+<a id="L50" href="#L50" class="br">50 </a>    <span class="hid">gg</span> = <span class="hid">enumerate</span>(<span class="hid">array</span>).<span class="hid">map</span>!(<span class="hid">a</span> =&gt; <span class="hid">aes</span>!(<span class="str">&quot;x&quot;</span>, <span class="str">&quot;y&quot;</span>, <span class="str">&quot;colour&quot;</span>, <span class="str">&quot;size&quot;</span>)(<span class="hid">a</span>[<span class="num">0</span>], <span class="hid">a</span>[<span class="num">1</span>], <span class="num">0</span>, <span class="num">0.1</span>))
+<a id="L51" href="#L51" class="br">51 </a>        .<span class="hid">array.geomLine.putIn</span>(<span class="hid">gg</span>);
+<a id="L52" href="#L52" class="br">52 </a>    <span class="hid">gg</span> = <span class="str">&quot;time&quot;</span>.<span class="hid">xaxisLabel.putIn</span>(<span class="hid">gg</span>);
+<a id="L53" href="#L53" class="br">53 </a>    <span class="hid">gg</span> = <span class="str">&quot;gain&quot;</span>.<span class="hid">yaxisLabel.putIn</span>(<span class="hid">gg</span>);
+<a id="L54" href="#L54" class="br">54 </a>    <span class="kwrd">return</span> <span class="hid">gg</span>;
+<a id="L55" href="#L55" class="br">55 </a>}</pre></div>
+		<div id="page-nav">
+		<div id="source-navigation"><div class="list-holder"><ul><li><a href="../dspeech.plot.html" class="docs">[Docs] </a><a href="#L1">dspeech.plot</a><ul><li><a href="#L4">std.array</a></li><li><a href="#L5">std.algorithm</a></li><li><a href="#L7">ggplotd.aes</a></li><li><a href="#L8">ggplotd.axes</a></li><li><a href="#L9">ggplotd.ggplotd</a></li><li><a href="#L10">ggplotd.geom</a></li><li><a href="#L11">ggplotd.colour</a></li><li><a href="#L12">ggplotd.colourspace</a></li><li><a href="#L1">docDir</a></li><li><a href="#L16">geomPointRect</a></li><li><a href="#L26">plotMatrix</a></li><li><a href="#L44">plotVector</a></li></ul></li></ul></div></div></div>
+	</div>
+	<div id="page-footer">Page generated by <a href="https://github.com/adamdruppe/adrdox">adrdox</a></div>
+</body>
+</html>

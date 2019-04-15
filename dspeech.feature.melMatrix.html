@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+        <title>melMatrix (dspeech.feature.melMatrix)</title>
+	<meta charset="utf-8" />
+	<meta content="width=device-width, initial-scale=1" name="viewport" />
+        <link rel="stylesheet" href="style.css" />
+        <script type="text/javascript" src="script.js"></script>
+
+	
+	<link rel="prefetch" href="search-results.html" />
+</head>
+<body>
+	<div id="page-header">
+		<div id="logotype">
+		<span>Documentation</span>
+		<nav>
+			<a href="http://dlang.org/">Dlang.org</a>
+		</nav>
+		</div>
+
+		<form action="search-docs.html" id="search">
+			<input type="search" placeholder="Find a symbol name..." name="searchTerm" />
+			<input type="submit" value="Go" />
+		</form>
+	</div>
+	<div id="page-body">
+		<div id="page-content">
+		<h1>melMatrix</h1><div class="breadcrumbs"><a href="dspeech.html" class="breadcrumb">dspeech</a><a href="dspeech.feature.html" class="breadcrumb">feature</a></div><div><div class="documentation-comment synopsis"><div><p>Computes Mel-scale filterbank matrix</p></div></div></div><div class="annotated-prototype"><div class="function-prototype"><div class="attributes">@<span data-ident="safe" class="name">safe</span> nothrow pure </div><div class="return-type"></div><div class="function-name">melMatrix</div><div class="template-parameters">(<div class="parameters-list toplevel"><div class="template-parameter-item parameter-item">	<span><span data-ident="Dtype" class="name">Dtype</span> = <span class="builtin-type">double</span></span></div></div>)</div><div class="runtime-parameters">(<div class="parameters-list toplevel"><div class="runtime-parameter-item parameter-item"><span class="parameter-type-holder"><span class="parameter-type"><span data-ident="size_t" class="name">size_t</span></span></span> <span data-ident="nFreq" class="parameter-name name"><a href="#param-nFreq">nFreq</a></span></div><span class="comma">,</span><div class="runtime-parameter-item parameter-item"><span class="parameter-type-holder"><span class="parameter-type"><span data-ident="size_t" class="name">size_t</span></span></span> <span data-ident="nMel" class="parameter-name name"><a href="#param-nMel">nMel</a></span></div><span class="comma">,</span><div class="runtime-parameter-item parameter-item"><span class="parameter-type-holder"><span class="parameter-type"><span data-ident="Dtype" class="name">Dtype</span></span></span> <span data-ident="sampleFreq" class="parameter-name name"><a href="#param-sampleFreq">sampleFreq</a></span></div><span class="comma">,</span><div class="runtime-parameter-item parameter-item"><span class="parameter-type-holder"><span class="parameter-type"><span data-ident="Dtype" class="name">Dtype</span></span></span> <span data-ident="lowFreq" class="parameter-name name"><a href="#param-lowFreq">lowFreq</a></span><span class="parameter-default-value">&#160;=&#160;20</span></div><span class="comma">,</span><div class="runtime-parameter-item parameter-item"><span class="parameter-type-holder"><span class="parameter-type"><span data-ident="Dtype" class="name">Dtype</span></span></span> <span data-ident="highFreq" class="parameter-name name"><a href="#param-highFreq">highFreq</a></span><span class="parameter-default-value">&#160;=&#160;0</span></div></div>)</div><div class="function-contracts"></div></div></div><div><h2 id="examples"><a href="#examples" class="header-anchor">Examples</a></h2><div class="documentation-comment"><div></div></div><div class="unittest-example-holder"><div class="documentation-comment"><p><img alt="" src="dspeech.feature.mel.png" /></p></div><pre class="d_code highlighted with-line-wrappers"><span class="br">1 </span><span class="kwrd">import</span> <span class="hid">mir</span>.<span class="hid">ndslice</span> : <span class="hid">transposed</span>;
+<span class="br">2 </span><span class="kwrd">import</span> <span class="hid">dspeech</span>.<span class="hid">plot</span> : <span class="hid">plotMatrix</span>, <span class="hid">docDir</span>;
+<span class="br">3 </span><span class="kwrd">auto</span> <span class="hid">m</span> = <span class="hid">melMatrix</span>!<span class="type">double</span>(<span class="num">200</span>, <span class="num">40</span>, <span class="num">16000.0</span>);
+<span class="br">4 </span><span class="hid">m</span>.<span class="hid">transposed</span>.<span class="hid">plotMatrix</span>.<span class="hid">save</span>(
+<span class="br">5 </span>    <span class="hid">docDir</span> ~ <span class="str">&quot;dspeech.feature.mel.png&quot;</span>,
+<span class="br">6 </span>    <span class="kwrd">cast</span>(<span class="type">int</span>) <span class="hid">m</span>.<span class="hid">length</span>!<span class="num">0</span> * <span class="num">3</span>, <span class="kwrd">cast</span>(<span class="type">int</span>) <span class="hid">m</span>.<span class="hid">length</span>!<span class="num">1</span> * <span class="num">9</span>);</pre></div><h2 id="meta"><a href="#meta" class="header-anchor">Meta</a></h2><div class="documentation-comment source-section other-section"><h3 id="source"><a href="#source" class="header-anchor">Source</a></h3><div><p><a href="source/dspeech.feature.d.html#L75">See Implementation</a><br /></p></div></div></div></div>
+		<div id="page-nav"><a href="dspeech.html" class="parent">dspeech</a><a href="dspeech.feature.html" class="parent">feature</a>
+		<span class="type-separator">functions</span><ul><li><a href="dspeech.feature.melMatrix.html" class="function current">melMatrix</a></li><li><a href="dspeech.feature.spectrogram.html" class="function">spectrogram</a></li></ul></div>
+	</div>
+	<div id="page-footer">Page generated by <a href="https://github.com/adamdruppe/adrdox">adrdox</a></div>
+</body>
+</html>
