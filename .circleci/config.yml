@@ -30,6 +30,7 @@ jobs:
             make doc
       - persist_to_workspace:
           root: generated-docs
+          paths: .
   test-ldc:
     docker:
       - image: circleci/buildpack-deps:18.04
