@@ -18,7 +18,7 @@ script:
   - dub test --build=unittest-cov
   - |
     if [ $DC = dmd ]; then
-      dub run -b=docs
+      make doc
       touch generated-docs/.nojekyll
     fi
 
