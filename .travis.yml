@@ -17,7 +17,7 @@ addons:
 script:
   - dub test --build=unittest-cov
   - |
-    if [ $DC = dmd ] then
+    if [ $DC = dmd ]; then
       dub run -b=docs
       touch generated-docs/.nojekyll
     fi
