@@ -15,13 +15,10 @@ jobs:
           name: apt
           command: sudo apt-get install libopenblas-dev libcairo2-dev
       - run:
-          name: compiler
+          name: test
           command: |
             source "$(curl -fsS  --retry 3 https://dlang.org/install.sh | bash -s dmd --activate)"
             $DC --version
-      - run:
-          name: test
-          command: |
             dub test -b=unittest-cov
             bash <(curl -s https://codecov.io/bash)
   test-ldc:
@@ -33,12 +30,9 @@ jobs:
           name: apt
           command: sudo apt-get install libopenblas-dev libcairo2-dev
       - run:
-          name: compiler
+          name: test
           command: |
             source "$(curl -fsS  --retry 3 https://dlang.org/install.sh | bash -s ldc --activate)"
             $DC --version
-      - run:
-          name: test
-          command: |
             dub test -b=unittest-cov
             bash <(curl -s https://codecov.io/bash)
