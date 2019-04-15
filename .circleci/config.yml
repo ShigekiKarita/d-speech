@@ -62,3 +62,6 @@ jobs:
       - run:
           name: Deploy docs to gh-pages branch
           command: gh-pages --dist generated-docs
+      - add_ssh_keys:
+          fingerprints:
+            - "0e:c6:7f:e0:a1:7d:41:39:ba:6f:c9:8f:85:8b:2f:48"
