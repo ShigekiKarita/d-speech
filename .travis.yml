@@ -19,7 +19,6 @@ script:
   - |
     if [ $DC = dmd ]; then
       make doc
-      touch generated-docs/.nojekyll
     fi
 
 after_success:
@@ -29,6 +28,7 @@ deploy:
   d: dmd
   provider: pages
   skip_cleanup: true
+  github_token: $GITHUB_TOKEN # Set in travis-ci.org dashboard
   local_dir: generated-docs
   on:
     branch: master
