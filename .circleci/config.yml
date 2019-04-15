@@ -5,6 +5,12 @@ workflows:
     jobs:
       - test-dmd
       - test-ldc
+      - docs-deploy:
+          requires:
+            - test-dmd
+          filters:
+            branches:
+              only: master
 jobs:
   test-dmd:
     docker:
@@ -21,6 +27,7 @@ jobs:
             $DC --version
             dub test -b=unittest-cov
             bash <(curl -s https://codecov.io/bash)
+            make doc
   test-ldc:
     docker:
       - image: circleci/buildpack-deps:18.04
@@ -36,3 +43,19 @@ jobs:
             $DC --version
             dub test -b=unittest-cov
             bash <(curl -s https://codecov.io/bash)
+  docs-deploy:
+    docker:
+      - image: node:8.10.0
+    steps:
+      - checkout
+      - attach_workspace:
+          at: generated-docs
+      - run:
+          name: Install and configure dependencies
+          command: |
+            npm install -g --silent gh-pages@2.0.1
+            git config user.email "ci-build@klukas.net"
+            git config user.name "ci-build"
+      - run:
+          name: Deploy docs to gh-pages branch
+          command: gh-pages --dist generated-docs
