@@ -12,6 +12,7 @@ d:
 addons:
   apt:
     packages:
+      - libcairo2-dev
       - libopenblas-dev
 
 script:
