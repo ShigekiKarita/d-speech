@@ -1,6 +1,6 @@
 # D-SPEECH
 
-[![Build Status](https://travis-ci.com/ShigekiKarita/d-speech.svg?branch=master)](https://travis-ci.com/ShigekiKarita/d-speech)
+[![CircleCI](https://circleci.com/gh/ShigekiKarita/d-speech.svg?style=svg)](https://circleci.com/gh/ShigekiKarita/d-speech)
 [![codecov](https://codecov.io/gh/ShigekiKarita/d-speech/branch/master/graph/badge.svg)](https://codecov.io/gh/ShigekiKarita/d-speech)
 
 WIP. speech processing (especially, speech recognition) toolkit for D
