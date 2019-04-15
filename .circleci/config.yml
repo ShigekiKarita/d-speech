@@ -1,6 +1,12 @@
 version: 2
+workflows:
+  version: 2
+  test:
+    jobs:
+      - test-dmd
+      - test-ldc
 jobs:
-  build:
+  test-ldc:
     docker:
       - image: circleci/buildpack-deps:18.04
 
@@ -12,12 +18,19 @@ jobs:
           command: sudo apt-get install libopenblas-dev libcairo2-dev
 
       - run:
-          name: test
+          name: compiler
           command: |
             source "$(curl -fsS  --retry 3 https://dlang.org/install.sh | bash -s ldc --activate)"
             $DC --version
-            dub test -b=unittest-cov
 
       - run:
-          name: report coverage
-          command: bash <(curl -s https://codecov.io/bash)
+          name: test
+          command: |
+            dub test -b=unittest-cov
+            bash <(curl -s https://codecov.io/bash)
+  test-dmd:
+      - run:
+          name: compiler
+          command: |
+            source "$(curl -fsS  --retry 3 https://dlang.org/install.sh | bash -s dmd --activate)"
+            $DC --version
