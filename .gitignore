@@ -10,6 +10,7 @@
 !Makefile
 !generated-docs/.gitkeep
 !*.yml
+!.nojekyll
 
 adrdox
 
