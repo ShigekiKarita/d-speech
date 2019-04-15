@@ -9,7 +9,7 @@
 !.gitignore
 !Makefile
 !generated-docs/.gitkeep
-!.travis.yml
+!*.yml
 
 adrdox
 

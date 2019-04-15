@@ -19,7 +19,6 @@ addons:
   apt:
     packages:
       - libcairo2-dev
-      - libpng-dev
       - libopenblas-dev
 
 script:

@@ -1,0 +1,20 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/buildpack-deps:18.04
+
+    steps:
+      - checkout
+
+      - run:
+          name: install ldc
+          command: source "$(curl -fsS  --retry 3 https://dlang.org/install.sh | bash -s ldc --activate)"
+
+      - run:
+          name: test
+          command: dub test -b=unittest-cov
+
+      - run:
+          name: report coverage
+          command: bash <(curl -s https://codecov.io/bash)
