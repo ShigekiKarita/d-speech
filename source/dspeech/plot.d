@@ -13,6 +13,11 @@ import ggplotd.colourspace : XYZ;
 
 static immutable docDir = "generated-docs/";
 
+/// retrieved from http://www.voxforge.org/home/downloads/speech/english/1snoke-20120412-hge
+/// prompt: He could feel a new stir in the land.
+// static immutable docWav = docDir ~ "a0409.wav";
+static immutable docWav = docDir ~ "english.wav";
+
 auto geomPointRect(AES)(AES aesRange)
 {
     import ggplotd.aes : aes, Pixel, DefaultValues, merge;
@@ -49,7 +54,7 @@ auto plotVector(T)(T array)
     auto gg = GGPlotD();
     gg = enumerate(array).map!(a => aes!("x", "y", "colour", "size")(a[0], a[1], 0, 0.1))
         .array.geomLine.putIn(gg);
-    gg = "time".xaxisLabel.putIn(gg);
-    gg = "gain".yaxisLabel.putIn(gg);
+    // gg = "time".xaxisLabel.putIn(gg);
+    // gg = "gain".yaxisLabel.putIn(gg);
     return gg;
 }

@@ -9,6 +9,7 @@
 !.gitignore
 !Makefile
 !generated-docs/.gitkeep
+!generated-docs/english.wav
 !*.yml
 !.nojekyll
 

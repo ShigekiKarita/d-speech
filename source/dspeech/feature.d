@@ -1,12 +1,70 @@
 /**
    Speech feature extraction module
 
-   See also: "Chapter 5 Speech Input/Output," HTK book 3.5 alpha1, pp. 89 - 113.
+   See also:
+   - "Chapter 5 Speech Input/Output," HTK book 3.5 alpha1, pp. 89 - 1
+   - https://github.com/jameslyons/python_speech_features
+
+   TODO: preemphasis and dither
 */
 module dspeech.feature;
 
+/** Compute Wave -> Spectrogram -> FBANK -> MFCC eventually
+
+- preemphasised and dithered wave
+
+$(IMG dspeech.feature.speech_wav.png )
+
+- power spectrogram
+
+$(IMG dspeech.feature.speech_spectrogram.png )
+
+- log-Mel filterbank (FBANK)
+
+$(IMG dspeech.feature.speech_fbank.png )
+
+- Mel-frequency cepstral coefficients (MFCC)
+
+$(IMG dspeech.feature.speech_mfcc.png )
+
+ */
+unittest
+{
+    import dspeech.plot : docDir, docWav, plotVector, plotMatrix;
+    import dffmpeg : Audio;
+    import mir.ndslice : map, sliced;
+
+    auto raw = Audio!short().load(docWav);
+    auto wav = raw.data.sliced.dither(1.0).preemphasis(0.97);
+    wav.plotVector.save(docDir ~ "dspeech.feature.speech_wav.png", 400, 200);
+    auto sp = wav.spectrogram(512, 256);
+    sp.plotMatrix.save(docDir ~ "dspeech.feature.speech_spectrogram.png", 400, 200);
+    auto fbanks = sp.toFbank(melMatrix(sp.length!0, 80, cast(double) raw.sample_rate));
+    fbanks.plotMatrix.save(docDir ~ "dspeech.feature.speech_fbank.png", 400, 200);
+    auto mfccs = fbanks.toMfcc;
+    mfccs.plotMatrix.save(docDir ~ "dspeech.feature.speech_mfcc.png", 400, 200);
+}
+
+
 
 import numir.signal : hann;
+
+/// Dither quantized wave
+auto dither(S)(S wave, double stddev = 1.0)
+{
+    import mir.ndslice : map;
+    import numir.random : RNG;
+    import mir.random.variable: NormalVariable;
+
+    return wave.map!(a => a + NormalVariable!double(0, stddev)(RNG.get));
+}
+
+
+/// Preemphasis wave signal
+auto preemphasis(S)(S wave, double factor = 0.97)
+{
+    return wave[1 .. $] - factor * wave[0 .. $-1];
+}
 
 /**
    Computes a magnitude 2-D spectrogram from a time-domain 1-D signal
@@ -19,7 +77,7 @@ Params:
 
 Returns: a magnitude 2D spectrogram
 */
-auto spectrogram(alias windowFun=hann, S)(S xs, size_t nperseg = 256, size_t noverlap = 128)
+auto spectrogram(alias windowFun=hann, bool power=false, S)(S xs, size_t nperseg = 256, size_t noverlap = 128)
 {
     import numir.signal : stft;
     import mir.math.common : sqrt;
@@ -28,8 +86,14 @@ auto spectrogram(alias windowFun=hann, S)(S xs, size_t nperseg = 256, size_t nov
 
     auto stfs = stft!windowFun(xs, nperseg, noverlap);
     auto upper = stfs.transposed[nperseg / 2 .. $];
-    auto mag = upper.map!(a => sqrt(a.re * a.re + a.im * a.im));
-    return mag;
+    static if (power)
+    {
+        return upper.map!(a => (a.re * a.re + a.im * a.im));
+    }
+    else
+    {
+        return upper.map!(a => sqrt(a.re * a.re + a.im * a.im));
+    }
 }
 
 /// example spectrogram of freq-modulated sin(a t + b cos(c t))
@@ -152,6 +216,31 @@ unittest
     import mir.ndslice;
     import numir.testing : approxEqual;
     auto y = dct([4.0, 3.0, 5.0, 10.0].sliced);
-    // >>> scipy.fftpack.dct([4., 3., 5., 10.], type=2, norm="ortho")
+    // python: scipy.fftpack.dct([4., 3., 5., 10.], type=2, norm="ortho")
     assert(approxEqual([11.        , -4.46088499,  3.        , -0.31702534].sliced, y.slice));
+}
+
+
+/// Computes log-Mel filterbank (FBANK) feature from spectrogram signal and Mel matrix
+auto toFbank(S, M)(S spect, M melmat)
+{
+    import lubeck : mtimes;
+    import mir.ndslice : map, transposed;
+    import mir.math.common : log, fmax;
+
+    return melmat.transposed.mtimes(spect).map!(x => fmax(x, typeof(x).epsilon).log);
+}
+
+
+/// Computes MFCC feature from log-Mel filterbank (FBANK) feature
+auto toMfcc(S)(S fbanks, size_t nceps = 13, double lifter = 22)
+{
+    import numir : alongDim;
+    import mir.ndslice : map, iota, ndiota, transposed, slice;
+    import mir.math.common : sin;
+    import std.math : PI;
+
+    auto l = 1.0 + 0.5 * iota(nceps).map!(i => lifter * sin(PI * i / lifter));
+    auto N = fbanks.length!1;
+    return ndiota(nceps, N).map!(i => dct(fbanks[0 .. $, i[1]])[i[0] + 1] * l[i[0]]);
 }
