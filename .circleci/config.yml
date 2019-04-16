@@ -38,7 +38,7 @@ jobs:
       - checkout
       - run:
           name: apt
-          command: sudo apt-get install libopenblas-dev libcairo2-dev
+          command: sudo apt-get install libopenblas-dev libcairo2-dev ffmpeg
       - run:
           name: test
           command: |
