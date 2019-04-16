@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+        <title>dct (dspeech.feature.dct)</title>
+	<meta charset="utf-8" />
+	<meta content="width=device-width, initial-scale=1" name="viewport" />
+        <link rel="stylesheet" href="style.css" />
+        <script type="text/javascript" src="script.js"></script>
+
+	
+	<link rel="prefetch" href="search-results.html" />
+</head>
+<body>
+	<div id="page-header">
+		<div id="logotype">
+		<span>Documentation</span>
+		<nav>
+			<a href="http://dlang.org/">Dlang.org</a>
+		</nav>
+		</div>
+
+		<form action="search-docs.html" id="search">
+			<input type="search" placeholder="Find a symbol name..." name="searchTerm" />
+			<input type="submit" value="Go" />
+		</form>
+	</div>
+	<div id="page-body">
+		<div id="page-content">
+		<h1>dct</h1><div class="breadcrumbs"><a href="dspeech.html" class="breadcrumb">dspeech</a><a href="dspeech.feature.html" class="breadcrumb">feature</a></div><div><div class="documentation-comment synopsis"><div><p>Computes type-II DCT on 1-d signal:</p><p><span class="user-math-render-failed">y[k] = 2 f \sum_{n=0}^{N-1} x[n] \cos \pi k \frac{2n + 1}{2 N} </span>,</p><p>where the scaling factor f = sqrt(1 / 4 N) if k = 0,  f = sqrt(1 / 2 N) otherwise,</p></div></div></div><div class="annotated-prototype"><div class="function-prototype"><div class="attributes"></div><div class="return-type"><a href="http://dpldocs.info/auto-function-return-prototype" class="lang-feature">auto</a> </div><div class="function-name">dct</div><div class="template-parameters">(<div class="parameters-list toplevel"><div class="template-parameter-item parameter-item">	<span><a href="http://dpldocs.info/template-alias-parameter" class="lang-feature">alias</a> <span data-ident="sumKind" class="name">sumKind</span> = &quot;precise&quot;</span></div><div class="template-parameter-item parameter-item">	<span><span data-ident="S" class="name">S</span></span></div></div>)</div><div class="runtime-parameters">(<div class="parameters-list toplevel"><div class="runtime-parameter-item parameter-item"><span class="parameter-type-holder"><span class="parameter-type"><span data-ident="S" class="name">S</span></span></span> <span data-ident="xs" class="parameter-name name"><a href="#param-xs">xs</a></span></div></div>)</div><div class="function-contracts"></div></div></div><div><h2 id="parameters"><a href="#parameters" class="header-anchor">Parameters</a></h2><dl class="parameter-descriptions"><dt id="param-xs"><a data-ident="xs" href="#param-xs" class="parameter-name">xs</a></dt><dd><div class="parameter-type-holder">Type: <span class="parameter-type"><span data-ident="S" class="name">S</span></span></div><div class="documentation-comment"><div><p>input array</p></div></div></dd></dl><h2 id="returns"><a href="#returns" class="header-anchor">Return Value</a></h2><div><div class="return-type-holder">Type: <span class="return-type"><a href="http://dpldocs.info/auto-function-return-prototype" class="lang-feature">auto</a> </span></div><div class="documentation-comment returns-description"><div><p>DCT transformed 1-d array</p></div></div></div><h2 id="examples"><a href="#examples" class="header-anchor">Examples</a></h2><div class="documentation-comment"><div></div></div><div class="unittest-example-holder"><div class="documentation-comment"><p>compare with scipy.fftpack.dct</p></div><pre class="d_code highlighted with-line-wrappers"><span class="br">1 </span><span class="kwrd">import</span> <span class="hid">mir</span>.<span class="hid">ndslice</span>;
+<span class="br">2 </span><span class="kwrd">import</span> <span class="hid">numir</span>.<span class="hid">testing</span> : <span class="hid">approxEqual</span>;
+<span class="br">3 </span><span class="kwrd">auto</span> <span class="hid">y</span> = <span class="hid">dct</span>([<span class="num">4.0</span>, <span class="num">3.0</span>, <span class="num">5.0</span>, <span class="num">10.0</span>].<span class="hid">sliced</span>);
+<span class="br">4 </span><span class="com">// &gt;&gt;&gt; scipy.fftpack.dct([4., 3., 5., 10.], type=2, norm=&quot;ortho&quot;)</span>
+<span class="br">5 </span><span class="kwrd">assert</span>(<span class="hid">approxEqual</span>([<span class="num">11.</span>        , -<span class="num">4.46088499</span>,  <span class="num">3.</span>        , -<span class="num">0.31702534</span>].<span class="hid">sliced</span>, <span class="hid">y</span>.<span class="hid">slice</span>));</pre></div><h2 id="see-also"><a href="#see-also" class="header-anchor">See Also</a></h2><div class="documentation-comment see-also-section"><div><p><a href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.fftpack.dct.html">https://docs.scipy.org/doc/scipy/reference/generated/scipy.fftpack.dct.html</a></p></div></div><h2 id="meta"><a href="#meta" class="header-anchor">Meta</a></h2><div class="documentation-comment source-section other-section"><h3 id="source"><a href="#source" class="header-anchor">Source</a></h3><div><p><a href="source/dspeech.feature.d.html#L134">See Implementation</a><br /></p></div></div></div></div>
+		<div id="page-nav"><a href="dspeech.html" class="parent">dspeech</a><a href="dspeech.feature.html" class="parent">feature</a>
+		<span class="type-separator">functions</span><ul><li><a href="dspeech.feature.dct.html" class="function current">dct</a></li><li><a href="dspeech.feature.melMatrix.html" class="function">melMatrix</a></li><li><a href="dspeech.feature.spectrogram.html" class="function">spectrogram</a></li></ul></div>
+	</div>
+	<div id="page-footer">Page generated by <a href="https://github.com/adamdruppe/adrdox">adrdox</a></div>
+</body>
+</html>
