@@ -73,7 +73,6 @@ TODO:
     make this function @nogc
  */
 @safe nothrow pure melMatrix(Dtype = double)(size_t nFreq, size_t nMel, Dtype sampleFreq, Dtype lowFreq= 20, Dtype highFreq = 0)
-do
 {
     import mir.ndslice : iota, as, sliced, map;
     import numir : zeros;
@@ -115,4 +114,44 @@ unittest
     m.transposed.plotMatrix.save(
         docDir ~ "dspeech.feature.mel.png",
         cast(int) m.length!0 * 3, cast(int) m.length!1 * 9);
+}
+
+/**
+Computes type-II DCT on 1-d signal:
+
+$(MATH y[k] = 2 f \sum_{n=0}^{N-1} x[n] \cos \pi k \frac{2n + 1}{2 N} ),
+
+where the scaling factor f = sqrt(1 / 4 N) if k = 0,  f = sqrt(1 / 2 N) otherwise,
+
+Params:
+    xs = input array
+
+Returns:
+    DCT transformed 1-d array
+
+See_also: https://docs.scipy.org/doc/scipy/reference/generated/scipy.fftpack.dct.html
+ */
+auto dct(alias sumKind = "precise", S)(S xs)
+{
+    import std.math : PI;
+    import mir.math.common;
+    import mir.math.sum;
+    import mir.primitives : DimensionCount;
+    static assert(DimensionCount!S == 1);
+    import mir.ndslice;
+    const N = xs.length;
+    const f0 = 2 * sqrt(0.25 / N);
+    const f = 2 * sqrt(0.5 / N);
+    return  iota(N).map!(k => (k == 0 ? f0 : f) * iota(N).map!(n => xs[n] * cos(PI * k * (2 * n + 1) / (2 * N))).sum!sumKind);
+}
+
+
+/// compare with scipy.fftpack.dct
+unittest
+{
+    import mir.ndslice;
+    import numir.testing : approxEqual;
+    auto y = dct([4.0, 3.0, 5.0, 10.0].sliced);
+    // >>> scipy.fftpack.dct([4., 3., 5., 10.], type=2, norm="ortho")
+    assert(approxEqual([11.        , -4.46088499,  3.        , -0.31702534].sliced, y.slice));
 }
