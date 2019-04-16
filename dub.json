@@ -7,7 +7,7 @@
         "d-ffmpeg-light": "~>0.0.2",
         "d-graphviz": "~>0.0.1",
         "ggplotd": "~>1.1.8",
-        "numir": "~>2.0.1",
+        "numir": "~>2.0.2",
         "snck": "~>0.0.4",
         "lubeck": "~>1.1.4"
     },
